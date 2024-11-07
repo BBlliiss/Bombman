@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody2D rb;
     public Animator anim;
 
-    [Header("Base Parameter")] public float speed;
+    [Header("Player Settings")] public float speed;
     public float jumpForce;
 
     [Header("Ground Check")] public LayerMask groundLayer;
@@ -20,6 +20,10 @@ public class PlayerController : MonoBehaviour
     public GameObject JumpFXPrefab;
     public GameObject FallFXPrefab;
 
+    [Header("Attack Settings")] public GameObject bombPrefab;
+    public float attackCD;
+    private float attackTimer;
+    
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -48,6 +52,11 @@ public class PlayerController : MonoBehaviour
         {
             Jump();
         }
+
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            Attack();
+        }
     }
 
     #endregion
@@ -68,6 +77,16 @@ public class PlayerController : MonoBehaviour
     {
         StartJumpFX();
         rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+    }
+
+    public void Attack()
+    {
+        if (Time.time > attackTimer)
+        {
+            Instantiate(bombPrefab, transform.position, Quaternion.identity);
+
+            attackTimer = Time.time + attackCD;
+        }
     }
 
     #endregion
