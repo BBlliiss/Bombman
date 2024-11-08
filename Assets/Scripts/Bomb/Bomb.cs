@@ -8,9 +8,10 @@ public class Bomb : MonoBehaviour
     private Animator anim;
     private Rigidbody2D rb;
     private float startTime;
-    public PlayerController player;
+    public bool isOn;
 
-    [Header("Bomb Settings")] public float bombForce;
+    [Header("Bomb Settings")] public int damage;
+    public float bombForce;
     public float duration;
     public LayerMask targetLayer;
 
@@ -21,13 +22,13 @@ public class Bomb : MonoBehaviour
     {
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
-        
-        startTime = Time.time;
+
+        TurnOn();
     }
 
     private void Update()
     {
-        if (Time.time > startTime + duration)
+        if (isOn && Time.time > startTime + duration)
         {
             anim.Play("BombExplode");
             rb.velocity = Vector2.zero;
@@ -44,10 +45,39 @@ public class Bomb : MonoBehaviour
                 continue;
 
             Vector3 dir = (target.transform.position - explosion.position).normalized;
-            
-            if(target.GetComponent<Rigidbody2D>() != null)
+
+            if (target.GetComponent<Rigidbody2D>() != null)
                 target.GetComponent<Rigidbody2D>().AddForce(dir * bombForce, ForceMode2D.Impulse);
+
+            if (target.CompareTag("Bomb"))
+            {
+                target.GetComponent<Bomb>().TurnOn();
+            }
+
+            if (target.GetComponent<IDamageable>() != null)
+            {
+                target.GetComponent<IDamageable>().GetHurt(damage);
+            }
         }
+    }
+
+    public void TurnOff()
+    {
+        if (!isOn) return;
+
+        isOn = false;
+        anim.Play("BombOff");
+        gameObject.layer = LayerMask.NameToLayer("Environment");
+    }
+
+    public void TurnOn()
+    {
+        if (isOn) return;
+
+        isOn = true;
+        anim.Play("BombOn");
+        gameObject.layer = LayerMask.NameToLayer("Bomb");
+        startTime = Time.time + duration;
     }
 
     public void AnimationFinish()

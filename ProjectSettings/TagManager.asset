@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Bomb
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -15,8 +17,8 @@ TagManager:
   - Environment
   - NPC
   - Bomb
-  - 
-  - 
+  - Player
+  - Attack
   - 
   - 
   - 

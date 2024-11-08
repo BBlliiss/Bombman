@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IDamageable
 {
     public Rigidbody2D rb;
     public Animator anim;
 
     [Header("Player Settings")] public float speed;
     public float jumpForce;
+
+    [Header("Stats")] public int maxHp;
+    public StatInt currentHp;
+    public bool isDead = false;
 
     [Header("Ground Check")] public LayerMask groundLayer;
     public Transform groundCheck1;
@@ -23,15 +27,19 @@ public class PlayerController : MonoBehaviour
     [Header("Attack Settings")] public GameObject bombPrefab;
     public float attackCD;
     private float attackTimer;
-    
+
     private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
+
+        currentHp = new StatInt(maxHp, _onValueDecreased: Hurt, _onValueNegative: Dead);
     }
 
     private void Update()
     {
+        if (isDead) return;
+
         CheckInput();
 
         anim.SetFloat("xVelocity", Mathf.Abs(rb.velocity.x));
@@ -41,6 +49,12 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (isDead)
+        {
+            rb.velocity = new Vector2(0, rb.velocity.y);
+            return;
+        }
+
         Move();
     }
 
@@ -61,7 +75,7 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region PlayerMovement
+    #region PlayerMovements
 
     private void Move()
     {
@@ -87,6 +101,17 @@ public class PlayerController : MonoBehaviour
 
             attackTimer = Time.time + attackCD;
         }
+    }
+
+    public void Hurt()
+    {
+        anim.SetTrigger("Hurt");
+    }
+
+    public void Dead()
+    {
+        isDead = true;
+        anim.SetBool("Dead", isDead);
     }
 
     #endregion
@@ -124,4 +149,11 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
+    public void GetHurt(int damage)
+    {
+        if(anim.GetCurrentAnimatorStateInfo(1).IsName("Hurt")) return;
+        
+        currentHp.SetValue(currentHp - damage);
+    }
 }
