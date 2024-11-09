@@ -9,11 +9,7 @@ public class HitPoint : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GetComponentInParent<Enemy>().Attack(other.GetComponent<IDamageable>());
-        }
-        else if (other.CompareTag("Bomb"))
-        {
-            GetComponentInParent<Enemy>().Skill(other);
+            GetComponentInParent<Enemy>().Attack(other);
         }
     }
 }

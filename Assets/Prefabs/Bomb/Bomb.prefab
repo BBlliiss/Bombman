@@ -215,10 +215,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 895cd6c778264b9459a0ae0ec7d93771, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  bombTimer: 0
   isOn: 0
   damage: 3
   bombForce: 20
-  duration: 1.5
+  duration: 3
   targetLayer:
     serializedVersion: 2
     m_Bits: 1920

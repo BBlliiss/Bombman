@@ -7,7 +7,7 @@ public class Bomb : MonoBehaviour
 {
     private Animator anim;
     private Rigidbody2D rb;
-    private float startTime;
+    public float bombTimer;
     public bool isOn;
 
     [Header("Bomb Settings")] public int damage;
@@ -28,11 +28,13 @@ public class Bomb : MonoBehaviour
 
     private void Update()
     {
-        if (isOn && Time.time > startTime + duration)
+        if (isOn && bombTimer >= duration)
         {
             anim.Play("BombExplode");
             rb.velocity = Vector2.zero;
         }
+
+        bombTimer += Time.deltaTime;
     }
 
     public void Explode()
@@ -70,14 +72,14 @@ public class Bomb : MonoBehaviour
         gameObject.layer = LayerMask.NameToLayer("Environment");
     }
 
-    public void TurnOn()
+    public void TurnOn(float startTimer = 0)
     {
         if (isOn) return;
 
         isOn = true;
         anim.Play("BombOn");
         gameObject.layer = LayerMask.NameToLayer("Bomb");
-        startTime = Time.time + duration;
+        bombTimer = startTimer;
     }
 
     public void AnimationFinish()

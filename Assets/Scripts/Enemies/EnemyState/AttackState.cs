@@ -21,13 +21,16 @@ namespace Enemies
                     break;
                 default:
                 {
-                    float tempDis = Mathf.Abs(enemy.transform.position.x - enemy.targetPoint.position.x);
-                    for (int i = 1; i < enemy.targets.Count; i++)
+                    if (enemy.targetPoint != null)
                     {
-                        if (Mathf.Abs(enemy.transform.position.x - enemy.targets[i].position.x) < tempDis)
+                        float tempDis = Mathf.Abs(enemy.transform.position.x - enemy.targetPoint.position.x);
+                        for (int i = 1; i < enemy.targets.Count; i++)
                         {
-                            enemy.targetPoint = enemy.targets[i];
-                            tempDis = Mathf.Abs(enemy.transform.position.x - enemy.targetPoint.position.x);
+                            if (Mathf.Abs(enemy.transform.position.x - enemy.targets[i].position.x) < tempDis)
+                            {
+                                enemy.targetPoint = enemy.targets[i];
+                                tempDis = Mathf.Abs(enemy.transform.position.x - enemy.targetPoint.position.x);
+                            }
                         }
                     }
 

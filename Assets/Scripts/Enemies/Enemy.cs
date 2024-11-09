@@ -5,6 +5,7 @@ using System.Linq;
 using Enemies;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class Enemy : MonoBehaviour, IDamageable
 {
     private EnemyState currentState;
@@ -19,7 +20,8 @@ public class Enemy : MonoBehaviour, IDamageable
     public bool isDead;
     public int damage;
 
-    [Header("Enemy Settings")] public float speed;
+    [Header("Enemy Settings")] public int facingDir = 1;
+    public float speed;
 
     [Header("Navigation")] public Transform pointA;
     public Transform pointB;
@@ -68,7 +70,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     #region Actions
 
-    public void MoveToTarget()
+    public virtual void MoveToTarget()
     {
         Vector2 targetPos = new Vector2(targetPoint.position.x, transform.position.y);
         transform.position = Vector2.MoveTowards(transform.position, targetPos, speed * Time.deltaTime);
@@ -114,9 +116,9 @@ public class Enemy : MonoBehaviour, IDamageable
         anim.SetBool("Dead", isDead);
     }
 
-    public virtual void Attack(IDamageable _target)
+    public virtual void Attack(Behaviour _target)
     {
-        _target.GetHurt(damage);
+        _target.GetComponent<IDamageable>()?.GetHurt(damage);
     }
 
     public virtual void Skill(Behaviour item)
@@ -125,14 +127,19 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void CheckFacingDir()
     {
-        transform.rotation = Quaternion.Euler(0, transform.position.x < targetPoint.position.x ? 180 : 0, 0);
+        if ((facingDir == -1 && transform.position.x < targetPoint.position.x) ||
+            (facingDir == 1 && transform.position.x > targetPoint.position.x))
+        {
+            facingDir *= -1;
+            transform.Rotate(0, 180, 0);
+        }
     }
 
     #endregion
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (!alarmSign.activeSelf)
+        if (!isDead && !alarmSign.activeSelf)
         {
             StartCoroutine(OnAlarm());
         }
